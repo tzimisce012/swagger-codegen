@@ -438,7 +438,7 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
             apisToGenerate = new HashSet<String>(Arrays.asList(apiNames.split(",")));
         }
         if (apisToGenerate != null && !apisToGenerate.isEmpty()) {
-            Map<String, List<CodegenOperation>> updatedPaths = new TreeMap<String, List<CodegenOperation>>();
+            Map<String, List<CodegenOperation>> updatedPaths = new LinkedHashMap<>();
             for (String m : paths.keySet()) {
                 if (apisToGenerate.contains(m)) {
                     updatedPaths.put(m, paths.get(m));
@@ -449,12 +449,6 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
         for (String tag : paths.keySet()) {
             try {
                 List<CodegenOperation> ops = paths.get(tag);
-                Collections.sort(ops, new Comparator<CodegenOperation>() {
-                    @Override
-                    public int compare(CodegenOperation one, CodegenOperation another) {
-                        return ObjectUtils.compare(one.operationId, another.operationId);
-                    }
-                });
                 Map<String, Object> operation = processOperations(config, tag, ops, allModels);
 
                 operation.put("basePath", basePath);
@@ -805,7 +799,7 @@ public class DefaultGenerator extends AbstractGenerator implements Generator {
     }
 
     public Map<String, List<CodegenOperation>> processPaths(Map<String, Path> paths) {
-        Map<String, List<CodegenOperation>> ops = new HashMap<>();
+        Map<String, List<CodegenOperation>> ops = new LinkedHashMap<>();
         for (String resourcePath : paths.keySet()) {
             Path path = paths.get(resourcePath);
             processOperation(resourcePath, "get", path.getGet(), ops, path);
